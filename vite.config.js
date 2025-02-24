@@ -6,7 +6,7 @@ export default defineConfig({
     proxy: {
       // Proxy requests starting with /socket.io to your Express server
       '/socket.io': {
-        target: 'http://localhost:5173',
+        target: 'http://localhost:3000',
         ws: true, // enables websocket proxying
       },
     },

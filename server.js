@@ -1,53 +1,31 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
 
-const app = express();
-const server = http.createServer(app);
-
-app.use(express.static('public'));
-
-let boardState = []; // Array to hold drawing actions
-
-const io = require('socket.io')(5173, {
-    cors: {
-        origin: '*',
-        methods: ["GET", "POST"]
-    },
+const io = require('socket.io')(3000, {
+  cors: {
+      origin: '*',
+      methods: ["GET", "POST"]
+  },
 });
 
+let boardState = [];
+
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log(`User connected: ${socket.id}`);
 
-  // Send current board state to new client
-  socket.emit('init', boardState);
+  socket.emit('load', boardState);
 
-  // Listen for drawing events from client
   socket.on('draw', (data) => {
-    // data might include x, y coordinates, color, brush size, etc.
-    boardState.push(data);
-    // Broadcast the drawing action to other clients
-    socket.broadcast.emit('draw', data);
+      boardState.push(data);
+      socket.broadcast.emit('draw', data);
   });
 
-  // Listen for clear event from client
   socket.on('clear', () => {
-    boardState = []; // Reset board state
-    io.emit('clear'); // Notify all clients to clear their board
+      boardState = [];
+      io.emit('clear');
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+      console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-const PORT = process.env.PORT || 5173;
-server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
-const path = require('path');
-// ...
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+console.log('Socket.IO server running on http://localhost:3000');

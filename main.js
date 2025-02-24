@@ -1,6 +1,6 @@
 // Connect to the Socket.IO server
-
-const socket = io('http://localhost:5173');
+import { io } from "socket.io-client";
+const socket = io('http://localhost:3000');
 
 // Get references to the DOM elements
 const canvas = document.getElementById('whiteboard');
@@ -76,3 +76,6 @@ socket.on('draw', (data) => {
 socket.on('clear', () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 });
+
+
+
